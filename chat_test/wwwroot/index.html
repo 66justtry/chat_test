@@ -118,6 +118,7 @@
             </div>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
             <script>
 
 
@@ -133,8 +134,10 @@
                 });
 
                 // получение сообщения от пользователя
-                hubConnection.on("Receive", (message, user) => {
+                hubConnection.on("Receive", (message, user, msgid) => {
 
+                    const block = document.createElement("div");
+                    block.className = "msg_block";
                     // создаем элемент <b> для имени пользователя
                     const userNameElem = document.createElement("b");
                     userNameElem.textContent = `${user}: `;
@@ -144,9 +147,17 @@
                     elem.appendChild(userNameElem);
                     elem.appendChild(document.createTextNode(message));
 
+                    block.appendChild(elem);
+
+                    const msg_id = document.createElement("h3");
+                    msg_id.className = "msg_id";
+                    msg_id.textContent = msgid;
+
+                    block.appendChild(msg_id);
+
                     const scroll = document.getElementById("chatroom");
 
-                    document.getElementById("chatroom").appendChild(elem);
+                    document.getElementById("chatroom").appendChild(block);
                     scroll.scroll(0, 1000);
                 });
 
@@ -159,10 +170,36 @@
 
                     document.getElementById("chatroom").appendChild(elem);
                 });
+
+
+                //скрипт для изменения сообщения
+                $('body').on('click', '.msg_block', function () {
+                    /*console.log('jquery_' + $(this).text());*/
+                    document.getElementById("changes_block").style.visibility = "hidden";
+                });
+
+
+
+
+
+
             </script>
 
         </div>
 
+        <div class="msg_changes" id="changes_block">
+            <div>
+                <input id="change_text" type="text" />
+            </div>
+            
+            <div id="changes_buttons">
+                <button id="change_btn">Change</button>
+                <button id="delete_btn_me">Delete for me</button>
+                <button id="delete_btn_all">Delete for all</button>
+                <button id="answer_btn">Answer</button>
+            </div>
+            
+        </div>
 
         
     </div>

@@ -13,7 +13,23 @@ namespace chat_test
             //var userName = Context.UserIdentifier;
             if (Context.UserIdentifier is string userName)
             {
-                await Clients.Users(to, userName).SendAsync("Receive", message, userName);
+                //создание объекта message
+                //отправка сообщения в бд
+                int msgid = 5;
+                
+                await Clients.Users(to, userName).SendAsync("Receive", message, userName, msgid);
+            }
+        }
+
+        public async Task Change(string message, string to, int msgid)
+        {
+            if (Context.UserIdentifier is string userName)
+            {
+                //создание объекта message
+                //изменение сообщения в бд
+                
+
+                await Clients.Users(to, userName).SendAsync("ReceiveChange", message, userName, msgid);
             }
         }
 
