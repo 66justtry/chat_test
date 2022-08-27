@@ -52,6 +52,7 @@ header {
 
 #chatroom {
     height:400px;
+    padding:50px;
     overflow:auto;
 }
 
@@ -66,8 +67,19 @@ header {
     cursor:pointer;
 }
 
-.msg_block {
-    
+.msg_block_me {
+    min-height:70px;
+    min-width:300px;
+    max-width:300px;
+    background-color:greenyellow;
+    margin-left:450px;
+}
+
+.msg_block_another {
+    min-height: 70px;
+    min-width: 300px;
+    max-width: 300px;
+    background-color: grey;
 }
 
 .msg_id {
@@ -81,7 +93,8 @@ header {
     top:300px;
     left:30%;
     width:400px;
-    height:200px;
+    height:250px;
+    visibility:hidden;
 }
 
 #change_text {
