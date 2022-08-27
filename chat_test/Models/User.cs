@@ -32,6 +32,6 @@ namespace chat_test.Models
 
         public string? password { get; set; } //for using in the future
 
-        public string? chats { get; set; } //array of logins
+        public string? chats { get; set; } = "all"; //array of logins
     }
 }

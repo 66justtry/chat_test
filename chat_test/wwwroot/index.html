@@ -16,6 +16,26 @@
             <div id="chatsList">
 
             </div>
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+            <script>
+
+                $('body').on('click', '.chatline', function ()
+                {
+                    console.log('jquery_' + $(this).text());
+                    document.getElementById("receiver").value = $(this).text();
+                });
+
+
+
+                //const li = document.getElementById("chatsList").getElementsByClassName("chatline");
+                //for (let i = 0; i < li.length; i++) {
+                //    li[i].addEventListener("click", () => {
+                //        document.getElementById("receiver").value = "frfr";
+                //    })
+                //};
+
+            </script>
         </div>
 
 
@@ -64,11 +84,18 @@
                             .then(() => document.getElementById("sendBtn").disabled = false)
                             .catch(err => console.error(err.toString()));
 
+                        const elem = document.getElementById("chatsList");
 
-                        const list = document.getElementById("chatsList");
-                        const info = document.createElement("p");
-                        info.textContent = chats.toString();
-                        list.appendChild(info);
+                        var arr = chats.split(' ');
+
+                        for (let i = 0; i < arr.length; i++) {
+                            const e = document.createElement("p");
+                            e.textContent = arr[i];
+                            e.className = "chatline";
+                            elem.appendChild(e);
+                        }
+
+                        
 
                     }
                     else {
