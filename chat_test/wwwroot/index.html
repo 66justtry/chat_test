@@ -43,7 +43,9 @@
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                             login: document.getElementById("login").value,
-                            username: document.getElementById("username").value
+                            username: document.getElementById("username").value,
+                            password: "pass",
+                            chats: "all"
                         })
                     });
 
@@ -53,8 +55,8 @@
                         const data = await response.json();
                         token = data.access_token;
                         username = data.username;
-                        //let chats = data.chats.toString();
-                        //console.log(chats);
+                        let chats = data.chats.toString();
+                        
 
                         document.getElementById("loginBtn").disabled = true;
 
@@ -63,7 +65,10 @@
                             .catch(err => console.error(err.toString()));
 
 
-                        /*const list = document.getElementById("j");*/
+                        const list = document.getElementById("chatsList");
+                        const info = document.createElement("p");
+                        info.textContent = chats.toString();
+                        list.appendChild(info);
 
                     }
                     else {

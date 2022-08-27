@@ -9,7 +9,7 @@ using System.Text;
 
 var people = new List<User>
  {
-    new User("tom", "11111"),
+    new User("tom", "11111", "pass", "all friends bro"),
     new User("bob", "5555"),
     new User("sam", "22222")
 };
@@ -67,15 +67,15 @@ app.MapPost("/login", (User loginModel) =>
 {
 // находим пользователя 
 User? person = people.FirstOrDefault(p => p.login == loginModel.login);
-    // если пользователь не найден, отправляем статусный код 401
+    
     if (person is null) 
     {
         //loginModel.chats = "all";
-        people.Add(loginModel);
-        person = loginModel;
-    } 
+        people.Add(new User(loginModel.login, loginModel.username, loginModel.password, loginModel.chats));
+    }
+    person = people.FirstOrDefault(p => p.login == loginModel.login);
 
-var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, person.login) };
+    var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, person.login) };
 // создаем JWT-токен
 var jwt = new JwtSecurityToken(
         issuer: AuthOptions.ISSUER,
@@ -89,8 +89,8 @@ var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 var response = new
 {
 access_token = encodedJwt,
-username = person.login
-//chats = person.chats
+username = person.login,
+chats = person.chats
 };
 
 return Results.Json(response);
