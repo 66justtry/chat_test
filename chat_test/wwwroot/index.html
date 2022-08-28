@@ -147,18 +147,27 @@
 
 
                     // создаем элемент <b> для имени пользователя
-                    const userNameElem = document.createElement("b");
-                    userNameElem.textContent = `${user}: `;
+                    
 
                     // создает элемент <p> для сообщения пользователя
                     const elem = document.createElement("p");
-                    elem.appendChild(userNameElem);
-                    elem.appendChild(document.createTextNode(message));
+
+                    const name_span = document.createElement("span");
+                    name_span.className = "name_span";
+                    const text_span = document.createElement("span");
+                    text_span.className = "text_span";
+
+                    name_span.textContent = `${user}: `;
+                    text_span.textContent = message;
+
+                    elem.appendChild(name_span);
+                    elem.appendChild(text_span);
+
 
                     block.appendChild(elem);
 
                     const msg_id = document.createElement("h3");
-                    msg_id.className = "msg_id";
+                    msg_id.className = "id_m";
                     msg_id.textContent = msgid;
 
                     block.appendChild(msg_id);
@@ -168,6 +177,13 @@
                     document.getElementById("chatroom").appendChild(block);
                     scroll.scroll(0, 1000);
                 });
+
+
+                
+
+                
+
+
 
                 // получени общего уведомления
                 hubConnection.on("Notify", message => {
@@ -183,6 +199,10 @@
                 //скрипт для изменения сообщения
                 $('body').on('click', '.msg_block_me', function () {
                     /*console.log('jquery_' + $(this).text());*/
+                    var id = $(this).children("h3")[0].textContent;
+                    var text = $(this).find(".text_span")[0].textContent;
+                    document.getElementById("msg_id").textContent = id;
+                    document.getElementById("change_text").value = text;
                     document.getElementById("changes_block").style.visibility = "visible";
                     document.getElementById("answer_btn").disabled = true;
                 });
@@ -205,6 +225,8 @@
         </div>
 
         <div class="msg_changes" id="changes_block">
+
+            <h3 id="msg_id"></h3>
             <div>
                 <input id="change_text" type="text" />
             </div>
@@ -228,7 +250,54 @@
                     document.getElementById("answer_btn").disabled = false;
                     document.getElementById("change_text").value = "";
                     document.getElementById("changes_block").style.visibility = "hidden";
-                })
+                });
+
+                document.getElementById("change_btn").addEventListener("click", () => {
+                    let id = parseInt(document.getElementById("msg_id").textContent);
+                    var rec = document.getElementById("receiver").value;
+                    var text = document.getElementById("change_text").value;
+                    hubConnection.invoke("Change", text, rec, id)
+                        .catch(error => console.error(error));
+                });
+
+
+                
+
+
+
+                hubConnection.on("ReceiveChange", (message, user, msgid) => {
+                    
+                    var ids = document.getElementsByClassName("id_m");
+                    for (let i = 0; i < ids.length; i++) {
+                        if (parseInt(ids[i].textContent) === msgid) {
+                            document.getElementsByClassName("text_span")[i].textContent = message;
+                        }
+                    }
+
+                });
+
+
+
+                document.getElementById("delete_btn_all").addEventListener("click", () => {
+                    let id = parseInt(document.getElementById("msg_id").textContent);
+                    var rec = document.getElementById("receiver").value;
+                    hubConnection.invoke("DeleteForAll", rec, id)
+                        .catch(error => console.error(error));
+                });
+
+                hubConnection.on("ReceiveDeleteForAll", (user, msgid) => {
+
+                    var ids = document.getElementsByClassName("id_m");
+                    for (let i = 0; i < ids.length; i++) {
+                        if (parseInt(ids[i].textContent) === msgid) {
+                            let temp = document.getElementById("chatroom");
+                            temp.children[i].remove();
+                        }
+                    }
+                });
+
+
+
             </script>
 
         </div>

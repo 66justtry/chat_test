@@ -68,6 +68,8 @@ header {
 }
 
 .msg_block_me {
+    margin-top:5px;
+    margin-bottom:5px;
     min-height:70px;
     min-width:300px;
     max-width:300px;
@@ -76,14 +78,16 @@ header {
 }
 
 .msg_block_another {
+    margin-top: 5px;
+    margin-bottom: 5px;
     min-height: 70px;
     min-width: 300px;
     max-width: 300px;
     background-color: grey;
 }
 
-.msg_id {
-    display:none;
+.id_m {
+    /*display:none;*/
 }
 
 .msg_changes {
@@ -112,4 +116,16 @@ header {
 
 #changes_buttons button {
     margin:5px;
+}
+
+#msg_id {
+    display:none;
+}
+
+.name_span {
+    
+}
+
+.text_span {
+    font-size: 16px;
 }
