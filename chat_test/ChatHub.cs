@@ -15,7 +15,7 @@ namespace chat_test
             {
                 //создание объекта message
                 //отправка сообщения в бд
-                int msgid = 5;
+                int msgid = message.GetHashCode();
                 
                 await Clients.Users(to, userName).SendAsync("Receive", message, userName, msgid);
             }
@@ -32,6 +32,23 @@ namespace chat_test
                 await Clients.Users(to, userName).SendAsync("ReceiveChange", message, userName, msgid);
             }
         }
+
+        public async Task DeleteForAll(string to, int msgid)
+        {
+            // получение текущего пользователя, который отправил сообщение
+            //var userName = Context.UserIdentifier;
+            if (Context.UserIdentifier is string userName)
+            {
+                //удаление объекта message из бд
+                //обновление бд
+                
+
+                await Clients.Users(to, userName).SendAsync("ReceiveDeleteForAll", userName, msgid);
+            }
+        }
+
+
+
 
         public override async Task OnConnectedAsync()
         {
