@@ -1,5 +1,6 @@
 using chat_test;
 using chat_test.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +18,7 @@ var people = new List<User>
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>(); // ”станавливаем сервис дл€ получени€ Id пользовател€
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

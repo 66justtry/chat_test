@@ -6,7 +6,6 @@ namespace chat_test
     public class ChatHub : Hub
     {
 
-
         public async Task Send(string message, string to)
         {
             // получение текущего пользователя, который отправил сообщение
