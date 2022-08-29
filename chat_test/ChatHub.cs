@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using chat_test.Models;
+using Microsoft.AspNetCore.SignalR;
 
 
 namespace chat_test
@@ -12,11 +13,22 @@ namespace chat_test
             //var userName = Context.UserIdentifier;
             if (Context.UserIdentifier is string userName)
             {
-                //создание объекта message
-                //отправка сообщения в бд
-                int msgid = message.GetHashCode();
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    Message msg = new Message(userName, to, message);
+                    db.Messages.Add(msg);
+                    db.SaveChanges();
+                    int msgid = db.Messages.Where(u => u.sender == userName).Max(u => u.id);
+
+                    await Clients.Users(to, userName).SendAsync("Receive", message, userName, msgid);
+
+
+                }
+                    //создание объекта message
+                    //отправка сообщения в бд
+                    
                 
-                await Clients.Users(to, userName).SendAsync("Receive", message, userName, msgid);
+                
             }
         }
 
