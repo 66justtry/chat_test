@@ -67,35 +67,53 @@ app.UseAuthorization();   // добавление middleware авторизации
 
 app.MapPost("/login", (User loginModel) =>
 {
-// находим пользователя 
-User? person = people.FirstOrDefault(p => p.login == loginModel.login);
+
     
-    if (person is null) 
+
+    using (ApplicationDbContext db = new ApplicationDbContext()) 
     {
-        //loginModel.chats = "all";
-        people.Add(new User(loginModel.login, loginModel.username, loginModel.password, loginModel.chats));
+        // находим пользователя 
+        User? person = db.Users.FirstOrDefault(p => p.login == loginModel.login);
+
+        if (person is null)
+        {
+            //loginModel.chats = "all";
+            db.Users.Add(new User(loginModel.login, loginModel.username, loginModel.password, loginModel.chats));
+            db.SaveChanges();
+            person = db.Users.FirstOrDefault(p => p.login == loginModel.login);
+        }
+
+
+        else if (person.username != loginModel.username)
+        {
+            person.username = loginModel.username;
+            db.Users.Update(person);
+            db.SaveChanges();
+        }
+
+        var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, person.login) };
+
+
+
+        // создаем JWT-токен
+        var jwt = new JwtSecurityToken(
+                issuer: AuthOptions.ISSUER,
+                audience: AuthOptions.AUDIENCE,
+                claims: claims,
+                expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)),
+                signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+        var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+        // формируем ответ
+        var response = new
+        {
+            access_token = encodedJwt,
+            username = person.login,
+            chats = person.chats
+        };
+
+        return Results.Json(response);
     }
-    person = people.FirstOrDefault(p => p.login == loginModel.login);
-
-    var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, person.login) };
-// создаем JWT-токен
-var jwt = new JwtSecurityToken(
-        issuer: AuthOptions.ISSUER,
-        audience: AuthOptions.AUDIENCE,
-        claims: claims,
-        expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)),
-        signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-// формируем ответ
-var response = new
-{
-access_token = encodedJwt,
-username = person.login,
-chats = person.chats
-};
-
-return Results.Json(response);
 });
 
 app.MapHub<ChatHub>("/chat");
