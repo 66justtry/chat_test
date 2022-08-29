@@ -213,6 +213,10 @@
                     document.getElementById("change_btn").disabled = true;
                     document.getElementById("delete_btn_me").disabled = true;
                     document.getElementById("delete_btn_all").disabled = true;
+                    var text = $(this).find(".text_span")[0].textContent;
+                    var id = $(this).children("h3")[0].textContent;
+                    document.getElementById("answer_txt").textContent = text;
+                    document.getElementById("msg_id").textContent = id;
                 });
 
 
@@ -228,7 +232,7 @@
 
             <h3 id="msg_id"></h3>
             <div>
-                <input id="change_text" type="text" />
+                <input id="change_text" type="text" placeholder="Type your message here" />
             </div>
             
             <div id="changes_buttons">
@@ -240,6 +244,7 @@
             <div>
                 <button id="back_btn">Back</button>
             </div>
+            <p id="answer_txt"></p>
             
             <script>
                 
@@ -296,9 +301,67 @@
                     }
                 });
 
+                document.getElementById("answer_btn").addEventListener("click", () => {
+                    let id = parseInt(document.getElementById("msg_id").textContent);
+                    let message = document.getElementById("change_text").value;
+                    let receiver = document.getElementById("receiver").value;
+                    let ans_text = document.getElementById("answer_txt").textContent;
+                    hubConnection.invoke("Answer", message, receiver, ans_text, id)
+                        .catch(error => console.error(error));
+                });
+
+
+
+
+                hubConnection.on("ReceiveAnswer", (message, user, msgid, answer_text) => {
+
+                    const block = document.createElement("div");
+
+                    const login_name = document.getElementById("login");
+
+                    if (login_name.value === user)
+                        block.className = "msg_block_me";
+                    else
+                        block.className = "msg_block_another";
+
+                    const elem = document.createElement("p");
+
+                    const name_span = document.createElement("span");
+                    name_span.className = "name_span";
+                    const text_span = document.createElement("span");
+                    text_span.className = "text_span";
+
+                    name_span.textContent = `${user}: `;
+                    text_span.textContent = message;
+
+                    elem.appendChild(name_span);
+                    elem.appendChild(text_span);
+
+                    const answerto = document.createElement("p");
+                    answerto.className = "answer_text";
+                    answerto.textContent = "Answer to: " + answer_text;
+
+                    block.appendChild(answerto);
+
+                    block.appendChild(elem);
+
+                    const msg_id = document.createElement("h3");
+                    msg_id.className = "id_m";
+                    msg_id.textContent = msgid;
+
+                    block.appendChild(msg_id);
+
+                    const scroll = document.getElementById("chatroom");
+
+                    document.getElementById("chatroom").appendChild(block);
+                    scroll.scroll(0, 1000);
+                });
+
 
 
             </script>
+
+            
 
         </div>
 

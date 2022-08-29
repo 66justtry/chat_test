@@ -21,6 +21,26 @@ namespace chat_test
             }
         }
 
+
+        public async Task Answer(string message, string to, string answer_text, int answer_id)
+        {
+            // получение текущего пользователя, который отправил сообщение
+            //var userName = Context.UserIdentifier;
+            if (Context.UserIdentifier is string userName)
+            {
+                //создание объекта message
+                //answer_id - id сообщения на которое отвечаем, добавляем в объект message, при загрузке из бд сможем показать что это ответ
+                //отправка сообщения в бд
+                int msgid = message.GetHashCode();
+                if (answer_text.Length > 30)
+                    answer_text = answer_text.Substring(0, 27) + "...";
+
+                await Clients.Users(to, userName).SendAsync("ReceiveAnswer", message, userName, msgid, answer_text);
+            }
+        }
+
+
+
         public async Task Change(string message, string to, int msgid)
         {
             if (Context.UserIdentifier is string userName)
