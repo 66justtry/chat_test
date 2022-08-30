@@ -20,6 +20,33 @@ namespace chat_test
                     db.SaveChanges();
                     int msgid = db.Messages.Where(u => u.sender == userName).Max(u => u.id);
 
+                    
+                    
+                    //если это первое сообщение в переписке с получателем, добавляем получателя в список чатов
+                    var sndr = db.Users.Where(u => u.login == userName).First();
+
+                    //по умолчанию пишем только существующим пользователям!!
+                    //если пользователь не существует, считаем что пишем в чат -- добавить!!!!!!
+                    
+                    string[] chats = sndr.chats.Split(' ');
+
+                    if (!chats.Contains(to))
+                    {
+                        sndr.chats += $" {to}";
+                        db.Users.Update(sndr);
+
+                        var rcvr = db.Users.Where(u => u.login == to).First();
+                        rcvr.chats += $" {userName}";
+                        db.Users.Update(rcvr);
+                        db.SaveChanges();
+                        //добавить правильное добавление нового чата - вызов метода у себя и получателя для обновления списка чатов
+                        //у себя - сразу открыть этот чат
+                    }
+
+                    
+
+
+
                     await Clients.Users(to, userName).SendAsync("Receive", message, userName, msgid);
 
 
@@ -32,21 +59,60 @@ namespace chat_test
             }
         }
 
+        public async Task SendToLoad(string to)
+        {
+            if (Context.UserIdentifier is string userName)
+            {
+                //добавить проверку на чат!!!!!!!
+                //добавить проверку на удаленные сообщения!!!!!
+                //проверка на ответы
+
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    //получаем 20 последних сообщений -- добавить
+                    var list = db.Messages.Where(m =>
+                        ((m.sender == userName && m.receiver == to) || (m.receiver == userName && m.sender == to))).ToList<Message>();
+
+                    //await Clients.Caller.SendAsync("ReceiveToLoad", list);
+                    await Clients.User(userName).SendAsync("ReceiveToLoad", list);
+
+                }
+
+            }
+        }
+
+
 
         public async Task Answer(string message, string to, string answer_text, int answer_id)
         {
-            // получение текущего пользователя, который отправил сообщение
-            //var userName = Context.UserIdentifier;
+            
             if (Context.UserIdentifier is string userName)
             {
-                //создание объекта message
-                //answer_id - id сообщения на которое отвечаем, добавляем в объект message, при загрузке из бд сможем показать что это ответ
-                //отправка сообщения в бд
-                int msgid = message.GetHashCode();
-                if (answer_text.Length > 30)
-                    answer_text = answer_text.Substring(0, 27) + "...";
 
-                await Clients.Users(to, userName).SendAsync("ReceiveAnswer", message, userName, msgid, answer_text);
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    Message msg = new Message(userName, to, message);
+                    msg.answerto_id = answer_id;
+                    db.Messages.Add(msg);
+                    db.SaveChanges();
+                    int msgid = db.Messages.Where(u => u.sender == userName).Max(u => u.id);
+
+                    //добавить работу с чатами!!
+                    //сейчас работает только с ответами в личные сообщения одному пользователю
+
+
+                    if (answer_text.Length > 30)
+                        answer_text = answer_text.Substring(0, 27) + "...";
+
+                    await Clients.Users(to, userName).SendAsync("ReceiveAnswer", message, userName, msgid, answer_text);
+
+
+
+
+                }
+
+
+
             }
         }
 
@@ -54,27 +120,41 @@ namespace chat_test
 
         public async Task Change(string message, string to, int msgid)
         {
+            //добавить работу с группой!!!
+
             if (Context.UserIdentifier is string userName)
             {
-                //создание объекта message
-                //изменение сообщения в бд
-                
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    var msg = db.Messages.Where(m => m.id == msgid).First();
+                    msg.text = message;
+                    db.Messages.Update(msg);
+                    db.SaveChanges();
 
-                await Clients.Users(to, userName).SendAsync("ReceiveChange", message, userName, msgid);
+
+                    await Clients.Users(to, userName).SendAsync("ReceiveChange", message, userName, msgid);
+                }
+                    
             }
         }
 
         public async Task DeleteForAll(string to, int msgid)
         {
-            // получение текущего пользователя, который отправил сообщение
-            //var userName = Context.UserIdentifier;
+            //полное удаление сообщения из бд
+
+            //добавить для удаления у пользователей группы!!!
             if (Context.UserIdentifier is string userName)
             {
-                //удаление объекта message из бд
-                //обновление бд
-                
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    var msg = db.Messages.Where(m => m.id == msgid).First();
+                    db.Messages.Remove(msg);
+                    db.SaveChanges();
 
-                await Clients.Users(to, userName).SendAsync("ReceiveDeleteForAll", userName, msgid);
+
+                    await Clients.Users(to, userName).SendAsync("ReceiveDeleteForAll", userName, msgid);
+                }
+
             }
         }
 
@@ -83,7 +163,7 @@ namespace chat_test
 
         public override async Task OnConnectedAsync()
         {
-            await Clients.All.SendAsync("Notify", $"Приветствуем {Context.UserIdentifier}");
+            await Clients.Caller.SendAsync("Notify", $"Приветствуем, {Context.UserIdentifier}\n Выберите чат для начала общения");
             await base.OnConnectedAsync();
         }
 

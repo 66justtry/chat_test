@@ -24,7 +24,26 @@
                 {
                     console.log('jquery_' + $(this).text());
                     document.getElementById("receiver").value = $(this).text();
+
+                    //при нажатии на строку нужно удалить все блоки div с сообщениями, потом вызвать метод из хаба для получения сообщений
+
+                    var allchat = document.getElementById("chatroom").children;
+                    for (let i = 0; i < allchat.length; i++) {
+                        allchat[i].remove();
+                    }
+                    
+                    hubConnection.invoke("SendToLoad", $(this).text())
+                        .catch(error => console.error(error));
+
                 });
+
+                
+
+
+                
+
+
+
 
 
 
@@ -43,8 +62,8 @@
         <div class="login">
             <div id="loginBlock">
                 Введите логин и пароль:<br />
-                <input id="login" type="text" />
-                <input id="username" type="text" />
+                <input id="login" type="text" placeholder="Login" required/>
+                <input id="username" type="text" placeholder="Username" required/>
                 <input id="loginBtn" type="button" value="Войти" />
             </div><br />
 
@@ -65,7 +84,7 @@
                             login: document.getElementById("login").value,
                             username: document.getElementById("username").value,
                             password: "pass",
-                            chats: "all"
+                            chats: "all admin"
                         })
                     });
 
@@ -112,8 +131,8 @@
 
             <div id="inputForm">
                 Введите сообщение и получателя:<br />
-                <input type="text" id="message" placeholder="Введите сообщение" />
-                <input type="text" id="receiver" placeholder="Введите получателя" />
+                <input type="text" id="message" placeholder="Введите сообщение" required/>
+                <input type="text" id="receiver" placeholder="Введите получателя" required/>
                 <input type="button" id="sendBtn" disabled value="Отправить" />
             </div>
 
@@ -135,6 +154,9 @@
 
                 // получение сообщения от пользователя
                 hubConnection.on("Receive", (message, user, msgid) => {
+
+                    if (document.getElementById("receiver").value !== user)
+                        return;
 
                     const block = document.createElement("div");
 
@@ -180,8 +202,58 @@
 
 
                 
-
+                //hubConnection.on("ReceiveToLoadTest", (list) => {
+                //    for (let i = 0; i < list.length; i++)
+                //        console.log(list[0].text)
+                //});
                 
+
+                hubConnection.on("ReceiveToLoad", (list) => {
+
+                    for (let i = 0; i < list.length; i++) {
+                        console.log(list[i].text)
+                        var block = document.createElement("div");
+
+                        var login_name = document.getElementById("login");
+
+                        if (login_name.value === list[i].sender)
+                            block.className = "msg_block_me";
+                        else
+                            block.className = "msg_block_another";
+
+                        const elem = document.createElement("p");
+
+                        const name_span = document.createElement("span");
+                        name_span.className = "name_span";
+                        const text_span = document.createElement("span");
+                        text_span.className = "text_span";
+
+                        name_span.textContent = `${list[i].sender}: `;
+                        text_span.textContent = list[i].text;
+
+                        elem.appendChild(name_span);
+                        elem.appendChild(text_span);
+
+
+                        block.appendChild(elem);
+
+                        var msg_id = document.createElement("h3");
+                        msg_id.className = "id_m";
+                        msg_id.textContent = list[i].id;
+
+                        block.appendChild(msg_id);
+
+                        var scroll = document.getElementById("chatroom");
+
+                        document.getElementById("chatroom").appendChild(block);
+                        scroll.scroll(0, 1000);
+                    }
+
+
+
+                });
+
+
 
 
 
