@@ -134,6 +134,10 @@ header {
     display:none;
 }
 
+#answer_from {
+    display:none;
+}
+
 .answer_text {
     color:red;
     display:block;
