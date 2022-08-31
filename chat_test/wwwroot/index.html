@@ -494,6 +494,29 @@
                     }
                 });
 
+                document.getElementById("delete_btn_me").addEventListener("click", () => {
+                    let id = parseInt(document.getElementById("msg_id").textContent);
+                    var rec = document.getElementById("receiver").value;
+                    hubConnection.invoke("DeleteForMe", rec, id)
+                        .catch(error => console.error(error));
+                });
+
+                hubConnection.on("ReceiveDeleteForMe", (user, msgid) => {
+
+                    var ids = document.getElementsByClassName("id_m");
+                    for (let i = 0; i < ids.length; i++) {
+                        if (parseInt(ids[i].textContent) === msgid) {
+                            let temp = document.getElementById("chatroom");
+                            temp.children[i].remove();
+                        }
+                    }
+                });
+
+
+
+
+
+
                 document.getElementById("answer_btn").addEventListener("click", () => {
                     let id = parseInt(document.getElementById("msg_id").textContent);
                     let message = document.getElementById("change_text").value;

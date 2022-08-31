@@ -95,9 +95,6 @@ namespace chat_test
             if (Context.UserIdentifier is string userName)
             {
 
-                //добавить проверку на удаленные сообщения!!!!!
-
-
                 using (ApplicationDbContext db = new ApplicationDbContext())
                 {
                     var answers = new List<AnswersList>(); //массив сообщений-ответов
@@ -110,7 +107,7 @@ namespace chat_test
 
                         //получаем 20 последних сообщений -- добавить
                         var list = db.Messages.Where(m =>
-                            ((m.sender == userName && m.receiver == to) || (m.receiver == userName && m.sender == to))).ToList<Message>();
+                            ((m.sender == userName && m.receiver == to && m.deleted == 0) || (m.receiver == userName && m.sender == to))).ToList<Message>();
                         foreach (var message in list)
                         {
                             if (message.answerto_id != 0)
@@ -275,11 +272,33 @@ namespace chat_test
                     }
                 }
 
+            }
+        }
 
+        public async Task DeleteForMe(string to, int msgid)
+        {
+            //удаление у отправителя
+
+            if (Context.UserIdentifier is string userName)
+            {
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    var msg = db.Messages.Where(m => m.id == msgid).First();
+                    msg.deleted = 1;
+                    db.Messages.Update(msg);
+                    db.SaveChanges();
+
+                    
+                    await Clients.User(userName).SendAsync("ReceiveDeleteForMe", userName, msgid);
+                    
+                   
+                }
 
             }
 
         }
+
+
 
         public override async Task OnConnectedAsync()
         {
