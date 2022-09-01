@@ -52,7 +52,7 @@ namespace chat_test
                                 await Clients.Users(userName).SendAsync("ReceiveNewChat", to, userName);
                             }
 
-                            //доделать открытие у отправителя!!
+                            
                         }
 
 
@@ -105,9 +105,9 @@ namespace chat_test
                     {
 
 
-                        //получаем 20 последних сообщений -- добавить
+                        
                         var list = db.Messages.Where(m =>
-                            ((m.sender == userName && m.receiver == to && m.deleted == 0) || (m.receiver == userName && m.sender == to))).ToList<Message>();
+                            ((m.sender == userName && m.receiver == to && m.deleted == 0) || (m.receiver == userName && m.sender == to))).ToList();
                         foreach (var message in list)
                         {
                             if (message.answerto_id != 0)
@@ -123,7 +123,7 @@ namespace chat_test
                     }
                     else
                     {
-                        //добавить -- загрузка первых 20 сообщений
+                        
                         var list = db.Messages.Where(m => m.receiver == to).ToList<Message>();
                         foreach (var message in list)
                         {

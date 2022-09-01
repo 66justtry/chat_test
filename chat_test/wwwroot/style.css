@@ -4,22 +4,30 @@
 }
 
 body, html {
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
+    background-color: #edaeae;
 }
 
 header {
-    width:100%;
-    height:100px;
+    width: 100%;
+    height: 100px;
     border-bottom: 1px solid black;
+    background-color: #edaeae;
 }
+
+h1 {
+    text-align:center;
+}
+
+
 
 .chats {
     height:100%;
     width:20%;
     float:left;
     /*background-color:aqua;*/
-    border-right:1px solid black;
+    /*border-right:1px solid black;*/
 }
 
 .messages {
@@ -37,23 +45,31 @@ header {
     content: '';
 }
 
+#loginBlock {
+    padding: 10px;
+}
+
 .login {
     height:100%;
     width:20%;
     float:right;
-    background-color:yellow;
-    border-left:1px solid black;
+    /*background-color:yellow;*/
+    /*border-left:1px solid black;*/
 }
 
 .wrapper {
     background-size: 100vh;
-    background-color:antiquewhite;
+    background-color: #f8d7d7;
 }
 
 #chatroom {
     height:400px;
     padding:50px;
     overflow:auto;
+}
+
+#message {
+    width:300px;
 }
 
 #inputForm {
@@ -65,29 +81,42 @@ header {
 .chatline {
     color:blue;
     cursor:pointer;
+    text-decoration:none;
+    display:block;
+    padding:5px;
+    margin-left:10px;
+    margin-top:10px;
+    font-size:20px;
 }
 
 .msg_block_me {
+    border-radius:5px;
     margin-top:5px;
     margin-bottom:5px;
     min-height:70px;
     min-width:300px;
     max-width:300px;
-    background-color:greenyellow;
+    background-color: #6df553;
     margin-left:450px;
 }
 
 .msg_block_another {
+    border-radius: 5px;
     margin-top: 5px;
     margin-bottom: 5px;
     min-height: 70px;
     min-width: 300px;
     max-width: 300px;
-    background-color: grey;
+    background-color: #c9c4c4;
+}
+
+#sendBtn, #loginBtn {
+    padding-left:20px;
+    padding-right:20px;
 }
 
 .id_m {
-    /*display:none;*/
+    display:none;
 }
 
 .msg_changes {
@@ -123,7 +152,8 @@ header {
 }
 
 .name_span {
-    
+    font-size: 16px;
+    font-weight:bold;
 }
 
 .text_span {
@@ -142,4 +172,10 @@ header {
     color:red;
     display:block;
     border-bottom:1px solid red;
+}
+
+#back_btn {
+    color:red;
+    float:right;
+    margin-right:20px;
 }

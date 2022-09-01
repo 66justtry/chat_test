@@ -7,10 +7,9 @@
 </head>
 <body>
     <header>
+        <h1>Chatroom</h1>
     </header>
     <div class="wrapper">
-
-
 
         <div class="chats">
             <div id="chatsList">
@@ -55,12 +54,7 @@
 
 
 
-                //const li = document.getElementById("chatsList").getElementsByClassName("chatline");
-                //for (let i = 0; i < li.length; i++) {
-                //    li[i].addEventListener("click", () => {
-                //        document.getElementById("receiver").value = "frfr";
-                //    })
-                //};
+                
 
             </script>
         </div>
@@ -69,10 +63,10 @@
 
         <div class="login">
             <div id="loginBlock">
-                Введите логин и пароль:<br />
+                Enter login and username:<br />
                 <input id="login" type="text" placeholder="Login" required/>
                 <input id="username" type="text" placeholder="Username" required/>
-                <input id="loginBtn" type="button" value="Войти" />
+                <input id="loginBtn" type="button" value="Log in" />
             </div><br />
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
@@ -138,10 +132,10 @@
             <div id="chatroom"></div>
 
             <div id="inputForm">
-                Введите сообщение и получателя:<br />
-                <input type="text" id="message" placeholder="Введите сообщение" required/>
-                <input type="text" id="receiver" placeholder="Введите получателя" required/>
-                <input type="button" id="sendBtn" disabled value="Отправить" />
+                Type your message and receiver (optional):<br />
+                <input type="text" id="message" placeholder="Your message" required/>
+                <input type="text" id="receiver" placeholder="Receiver" required/>
+                <input type="button" id="sendBtn" disabled value="Send" />
             </div>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
@@ -156,6 +150,7 @@
 
                     const message = document.getElementById("message").value;
                     const receiver = document.getElementById("receiver").value;
+                    document.getElementById("message").value = "";
                     hubConnection.invoke("Send", message, receiver)
                         .catch(error => console.error(error));
                 });
@@ -193,7 +188,10 @@
                     name_span.textContent = `${user}: `;
                     text_span.textContent = message;
 
+                    let br = document.createElement("br");
+
                     elem.appendChild(name_span);
+                    elem.appendChild(br);
                     elem.appendChild(text_span);
 
 
@@ -249,7 +247,10 @@
                             name_span.textContent = `${list[i].sender}: `;
                             text_span.textContent = list[i].text;
 
+                            let br = document.createElement("br");
+
                             elem.appendChild(name_span);
+                            elem.appendChild(br);
                             elem.appendChild(text_span);
 
 
@@ -287,7 +288,10 @@
                             name_span.textContent = `${list[i].sender}: `;
                             text_span.textContent = list[i].text;
 
+                            let br = document.createElement("br");
+
                             elem.appendChild(name_span);
+                            elem.appendChild(br);
                             elem.appendChild(text_span);
 
                             var answerto = document.createElement("p");
@@ -557,7 +561,10 @@
                     name_span.textContent = `${user}: `;
                     text_span.textContent = message;
 
+                    let br = document.createElement("br");
+
                     elem.appendChild(name_span);
+                    elem.appendChild(br);
                     elem.appendChild(text_span);
 
                     const answerto = document.createElement("p");
@@ -618,7 +625,10 @@
                     name_span.textContent = `${user}: `;
                     text_span.textContent = message;
 
+                    let br = document.createElement("br");
+
                     elem.appendChild(name_span);
+                    elem.appendChild(br);
                     elem.appendChild(text_span);
 
                     const answerto = document.createElement("p");
